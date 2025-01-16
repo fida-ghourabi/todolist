@@ -151,7 +151,7 @@ class TaskController extends AbstractController
             'tasks' => $taskData
         ]);
     }
-    #[Route('/tasks/modify/{id}', name: 'modify_task', methods: ['POST'])]
+    #[Route('/tasks/modify/{id}', name: 'modify_task', methods: ['PUT'])]
 public function modify(int $id, Request $request): JsonResponse
 {
     // Decode the request JSON
@@ -193,7 +193,7 @@ public function modify(int $id, Request $request): JsonResponse
     // Return the updated task as a JSON response
     return new JsonResponse($this->serializer->normalize($task), JsonResponse::HTTP_OK);
 }
-#[Route('/tasks/delete/{id}', name: 'delete_task', methods: ['GET'])]
+#[Route('/tasks/delete/{id}', name: 'delete_task', methods: ['DELETE'])]
 public function delete(int $id): JsonResponse
 {
     // Find the task by its ID
