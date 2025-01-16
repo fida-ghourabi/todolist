@@ -42,7 +42,7 @@
          
          // Set updated fields
          $user->setPassword($hashedPassword);
-         $user->setEmail($username); // Save the email as "username"
+         $user->setUsername($username); // Save the email as "username"
          $user->setName($name); // Save the username as "name"
          
          $em->persist($user);

@@ -55,6 +55,39 @@ class TaskController extends AbstractController
 
         return new JsonResponse($this->serializer->normalize($task), JsonResponse::HTTP_CREATED);
     }
+    #[Route('/tasks/{id}', name: 'get_task_by_id', methods: ['GET'])]
+    public function getTaskById(int $id): JsonResponse
+    {
+        // Find the task by its ID
+        $task = $this->taskRepository->find($id);
+
+        // Check if the task exists
+        if (!$task) {
+            return new JsonResponse(['error' => 'Task not found'], JsonResponse::HTTP_NOT_FOUND);
+        }
+
+        // Check if the task belongs to the authenticated user (optional)
+        $user = $this->getUser();
+        if ($task->getUserId() !== $user) {
+            return new JsonResponse(['error' => 'Unauthorized'], JsonResponse::HTTP_UNAUTHORIZED);
+        }
+
+        // Transform the task into an array to send in the response
+        $taskData = [
+            'id' => $task->getId(),
+            'description' => $task->getDescription(),
+            'tag' => $task->getTag(),
+            'created_at' => $task->getCreatedAt()->format('Y-m-d H:i:s'),
+            'priority' => $task->getPriority(),
+            'status' => $task->getStatus(),
+            'deadline' => $task->getDeadline() ? $task->getDeadline()->format('Y-m-d H:i:s') : null, // Include deadline
+        ];
+
+        // Return a JSON response with the task data
+        return $this->json([
+            'task' => $taskData
+        ]);
+    }
 
     #[Route('/tasks', name: 'get_tasks', methods: ['GET'])]
     public function getTasks(Request $request): JsonResponse
@@ -151,7 +184,7 @@ class TaskController extends AbstractController
             'tasks' => $taskData
         ]);
     }
-    #[Route('/tasks/modify/{id}', name: 'modify_task', methods: ['POST'])]
+    #[Route('/tasks/modify/{id}', name: 'modify_task', methods: ['PUT'])]
 public function modify(int $id, Request $request): JsonResponse
 {
     // Decode the request JSON
@@ -193,7 +226,7 @@ public function modify(int $id, Request $request): JsonResponse
     // Return the updated task as a JSON response
     return new JsonResponse($this->serializer->normalize($task), JsonResponse::HTTP_OK);
 }
-#[Route('/tasks/delete/{id}', name: 'delete_task', methods: ['GET'])]
+#[Route('/tasks/delete/{id}', name: 'delete_task', methods: ['DELETE'])]
 public function delete(int $id): JsonResponse
 {
     // Find the task by its ID
