@@ -33,9 +33,26 @@ class Task
     // Add the status field
     #[ORM\Column(type: "status_enum")] // Custom enum type for status
     private ?string $status = null;
+
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $deadline = null;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable(); // Automatically set the current timestamp
+    }
+
+    
+    public function getDeadline(): ?\DateTimeImmutable
+    {
+        return $this->deadline;
+    }
+
+    public function setDeadline(?\DateTimeImmutable $deadline): static
+    {
+        $this->deadline = $deadline;
+
+        return $this;
     }
     public function getId(): ?int
     {
